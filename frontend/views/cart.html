@@ -1,0 +1,133 @@
+<div class="container py-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+        <div>
+            <h1 class="h3 fw-bold mb-1"><i class="fa-solid fa-cake-candles me-2 text-primary"></i>Bakery Shopping Cart</h1>
+            <p class="text-muted small mb-0">Review your sweet treats and proceed to celebratory checkout</p>
+        </div>
+        <button class="btn btn-outline-danger btn-sm" ng-click="clearCart()" ng-if="cart.items.length > 0">
+            <i class="fa-solid fa-trash-can me-1"></i> Clear Cart
+        </button>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div class="text-center py-5" ng-if="loading">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading bakery cart...</span>
+        </div>
+    </div>
+
+    <!-- Empty Cart -->
+    <div class="text-center py-5 card-custom" ng-if="!loading && (!cart.items || cart.items.length === 0)">
+        <div class="my-4">
+            <i class="fa-solid fa-cookie-bite text-muted display-3 mb-3"></i>
+            <h3 class="fw-bold">Your Bakery Cart is Empty</h3>
+            <p class="text-muted">Explore our wide selection of freshly baked cakes, pastries, custom cakes, and party candles!</p>
+            <a href="#/products" class="btn btn-primary rounded-pill px-4 py-2 mt-2 fw-semibold">
+                <i class="fa-solid fa-cake-candles me-2"></i>Browse Bakery Menu
+            </a>
+        </div>
+    </div>
+
+    <!-- Cart Contents -->
+    <div class="row g-4" ng-if="!loading && cart.items.length > 0">
+        <!-- Cart Items List -->
+        <div class="col-lg-8">
+            <div class="card-custom p-0 overflow-hidden mb-4">
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="ps-4">Sweet Treat</th>
+                                <th class="text-center">Price</th>
+                                <th class="text-center">Quantity</th>
+                                <th class="text-end">Total</th>
+                                <th class="text-center pe-4">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="item in cart.items">
+                                <td class="ps-4 py-3">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <img ng-src="{{item.productImage || 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=100&auto=format&fit=crop&q=60'}}" 
+                                             alt="{{item.productName}}" class="rounded-3 border" style="width: 65px; height: 65px; object-fit: cover;">
+                                        <div>
+                                            <a href="#/products/{{item.productId}}" class="fw-bold text-dark text-decoration-none">
+                                                {{item.productName}}
+                                            </a>
+                                            <div class="small text-muted">SKU: {{item.productSku}} | {{item.productBrand || 'Bake My Day'}}</div>
+                                            <span class="badge bg-danger bg-opacity-10 text-danger small mt-1" ng-if="!item.inStock">
+                                                Exceeds available stock ({{item.availableStock}} available)
+                                            </span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="text-center fw-semibold">&#8377;{{item.unitPrice | number:2}}</td>
+                                <td class="text-center">
+                                    <div class="input-group input-group-sm d-inline-flex" style="width: 105px;">
+                                        <button class="btn btn-outline-secondary" type="button" ng-click="updateQuantity(item, -1)">
+                                            <i class="fa-solid fa-minus"></i>
+                                        </button>
+                                        <input type="text" class="form-control text-center px-1 fw-bold" ng-model="item.quantity" readonly>
+                                        <button class="btn btn-outline-secondary" type="button" ng-click="updateQuantity(item, 1)">
+                                            <i class="fa-solid fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                                <td class="text-end fw-bold font-monospace text-dark">&#8377;{{item.totalPrice | number:2}}</td>
+                                <td class="text-center pe-4">
+                                    <button class="btn btn-sm text-danger" ng-click="removeItem(item)" title="Remove item">
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center">
+                <a href="#/products" class="btn btn-outline-secondary btn-sm">
+                    <i class="fa-solid fa-arrow-left me-1"></i> Add More Bakery Treats
+                </a>
+            </div>
+        </div>
+
+        <!-- Order Summary Breakdown -->
+        <div class="col-lg-4">
+            <div class="card-custom p-4">
+                <h5 class="fw-bold mb-3 pb-2 border-bottom">Bakery Order Summary</h5>
+
+                <div class="d-flex justify-content-between mb-2 small text-muted">
+                    <span>Total Treats:</span>
+                    <span>{{cart.totalItems}} item(s)</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted">Subtotal (MRP):</span>
+                    <span class="fw-semibold">&#8377;{{cart.subtotal | number:2}}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2 text-success" ng-if="cart.discountAmount > 0">
+                    <span>Special Bakery Offer:</span>
+                    <span class="fw-semibold">- &#8377;{{cart.discountAmount | number:2}}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-3 text-muted">
+                    <span>Chilled Delivery Charge:</span>
+                    <span class="text-success fw-bold">FREE</span>
+                </div>
+
+                <div class="d-flex justify-content-between py-3 border-top border-bottom mb-4">
+                    <span class="fs-5 fw-bold">Grand Total:</span>
+                    <span class="fs-4 fw-bold text-primary font-monospace">&#8377;{{cart.finalAmount | number:2}}</span>
+                </div>
+
+                <button class="btn btn-primary btn-lg w-100 py-3 fw-bold shadow-sm" ng-click="proceedToCheckout()">
+                    Proceed to Checkout <i class="fa-solid fa-arrow-right ms-2"></i>
+                </button>
+
+                <div class="text-center mt-3 text-muted small">
+                    <i class="fa-solid fa-shield-halved me-1 text-primary"></i> 100% Freshness & Safe Delivery Guaranteed
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

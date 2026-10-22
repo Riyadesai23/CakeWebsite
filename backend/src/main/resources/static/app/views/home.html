@@ -1,0 +1,146 @@
+<div class="container py-4">
+    <!-- Hero Banner -->
+    <div class="hero-banner">
+        <div class="row align-items-center">
+            <div class="col-lg-7">
+                <div class="hero-badge">
+                    <i class="fa-solid fa-wand-magic-sparkles text-warning"></i>
+                    <span>Artisanal Patisserie & Cake Studio</span>
+                </div>
+                <h1 class="hero-title">Freshly Baked Moments Of Pure Joy</h1>
+                <p class="hero-subtitle">
+                    Indulge in handcrafted celebration cakes, exquisite French pastries, bespoke wedding masterpieces, and sparkling party candles delivered fresh to your doorstep.
+                </p>
+                <div class="d-flex flex-wrap gap-3">
+                    <a href="#/products" class="btn btn-light btn-lg px-4 py-3 fw-bold rounded-pill text-danger shadow">
+                        <i class="fa-solid fa-cake-candles me-2"></i>Explore Menu
+                    </a>
+                    <a href="#/products?categoryId=3" class="btn btn-outline-light btn-lg px-4 py-3 fw-bold rounded-pill">
+                        <i class="fa-solid fa-wand-magic-sparkles me-2 text-warning"></i>Custom Designer Cakes
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-5 d-none d-lg-block text-center position-relative">
+                <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=600&auto=format&fit=crop&q=80" 
+                     alt="Artisanal Cakes Bake My Day" class="img-fluid rounded-4 shadow-lg border border-white border-opacity-25" style="max-height: 320px; width: 100%; object-fit: cover;">
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Highlights Section -->
+    <div class="mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="h3 fw-bold mb-1">Explore Our Bakery Categories</h2>
+                <p class="text-muted mb-0">From decadent chocolate cakes to single-serve pastries and party candles</p>
+            </div>
+            <a href="#/products" class="btn btn-outline-primary btn-sm rounded-pill px-3">
+                Full Menu <i class="fa-solid fa-arrow-right ms-1"></i>
+            </a>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-6 col-md-3" ng-repeat="cat in categories">
+                <div class="category-card" ng-click="selectCategory(cat.id)">
+                    <div class="category-icon-wrap">
+                        <i class="fa-solid" ng-class="{
+                            'fa-cake-candles': cat.code === 'CAT-CAKE',
+                            'fa-cookie-bite': cat.code === 'CAT-PAST',
+                            'fa-wand-magic-sparkles': cat.code === 'CAT-CUST',
+                            'fa-fire-flame-curved': cat.code === 'CAT-CAND'
+                        }"></i>
+                    </div>
+                    <h3 class="h6 fw-bold mb-1 text-truncate">{{cat.name}}</h3>
+                    <small class="text-muted">{{cat.description}}</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Featured Products Section -->
+    <div class="mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="h3 fw-bold mb-1">Chef's Special & Bestsellers</h2>
+                <p class="text-muted mb-0">Handcrafted daily with premium Belgian chocolates and real fruits</p>
+            </div>
+            <a href="#/products" class="btn btn-outline-primary btn-sm rounded-pill px-3">
+                Browse All Treats <i class="fa-solid fa-arrow-right ms-1"></i>
+            </a>
+        </div>
+
+        <!-- Loading spinner -->
+        <div class="text-center py-5" ng-if="loading">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Baking something sweet...</span>
+            </div>
+        </div>
+
+        <div class="row g-4" ng-if="!loading">
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3" ng-repeat="prod in featuredProducts">
+                <div class="product-card">
+                    <div class="product-image-wrap">
+                        <span class="discount-badge" ng-if="prod.discountPercentage > 0">
+                            -{{prod.discountPercentage}}% OFF
+                        </span>
+                        <span class="brand-badge" ng-if="prod.brand">{{prod.brand}}</span>
+                        <a href="#/products/{{prod.id}}">
+                            <img ng-src="{{prod.imageUrl || 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=500&auto=format&fit=crop&q=60'}}" alt="{{prod.name}}">
+                        </a>
+                    </div>
+                    <div class="product-body">
+                        <div class="product-category">{{prod.categoryName}}</div>
+                        <a href="#/products/{{prod.id}}" class="text-decoration-none">
+                            <h4 class="product-title" title="{{prod.name}}">{{prod.name}}</h4>
+                        </a>
+                        <div class="stock-indicator" ng-class="{'stock-in': prod.inStock && !prod.lowStock, 'stock-low': prod.lowStock && prod.inStock, 'stock-out': !prod.inStock}">
+                            <i class="fa-solid fa-circle" style="font-size: 0.5rem;"></i>
+                            <span ng-if="prod.inStock && !prod.lowStock">Freshly Available ({{prod.availableQuantity}} {{prod.unit}}s)</span>
+                            <span ng-if="prod.lowStock && prod.inStock">Only {{prod.availableQuantity}} left today!</span>
+                            <span ng-if="!prod.inStock">Sold Out for Today</span>
+                        </div>
+                        <div class="price-box">
+                            <span class="current-price">&#8377;{{prod.finalPrice | number:2}}</span>
+                            <span class="original-price" ng-if="prod.discountPercentage > 0">&#8377;{{prod.price | number:2}}</span>
+                        </div>
+                        <button class="btn btn-primary w-100 mt-3" ng-click="addToCart(prod, $event)" ng-disabled="!prod.inStock">
+                            <i class="fa-solid fa-bag-shopping me-1"></i> Add to Order
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feature Pillars -->
+    <div class="row g-4 py-4 border-top">
+        <div class="col-md-3 col-6 text-center">
+            <div class="p-3">
+                <i class="fa-solid fa-cake-candles text-primary fs-2 mb-2"></i>
+                <h5 class="fw-bold fs-6 mb-1">Baked Fresh On Order</h5>
+                <p class="text-muted small mb-0">100% preservative-free artisanal recipes</p>
+            </div>
+        </div>
+        <div class="col-md-3 col-6 text-center">
+            <div class="p-3">
+                <i class="fa-solid fa-leaf text-success fs-2 mb-2"></i>
+                <h5 class="fw-bold fs-6 mb-1">100% Eggless Options</h5>
+                <p class="text-muted small mb-0">Delightful eggless & vegetarian friendly</p>
+            </div>
+        </div>
+        <div class="col-md-3 col-6 text-center">
+            <div class="p-3">
+                <i class="fa-solid fa-truck-fast text-info fs-2 mb-2"></i>
+                <h5 class="fw-bold fs-6 mb-1">Chilled Safe Delivery</h5>
+                <p class="text-muted small mb-0">Delivered in pristine condition</p>
+            </div>
+        </div>
+        <div class="col-md-3 col-6 text-center">
+            <div class="p-3">
+                <i class="fa-solid fa-wand-magic-sparkles text-warning fs-2 mb-2"></i>
+                <h5 class="fw-bold fs-6 mb-1">Custom Message & Art</h5>
+                <p class="text-muted small mb-0">Personalized greetings on every cake</p>
+            </div>
+        </div>
+    </div>
+</div>

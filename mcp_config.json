@@ -1,0 +1,18 @@
+{
+  "mcpServers": {
+    "graphify": {
+      "command": "python",
+      "args": [
+        "-m",
+        "graphify.serve",
+        "graphify-out/graph.json"
+      ]
+    },
+    "ponytail": {
+      "command": "python",
+      "args": [
+        ".agents/mcp/ponytail_server.py"
+      ]
+    }
+  }
+}

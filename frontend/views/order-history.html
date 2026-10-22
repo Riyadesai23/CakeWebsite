@@ -1,0 +1,88 @@
+<div class="container py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="#/home">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">My Bakery Orders</li>
+        </ol>
+    </nav>
+
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+        <div>
+            <h1 class="h3 fw-bold mb-1"><i class="fa-solid fa-cake-candles me-2 text-primary"></i>My Bakery Order History</h1>
+            <p class="text-muted small mb-0">Track cake baking progress, chilled deliveries, and view invoices</p>
+        </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div class="text-center py-5" ng-if="loading">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading your orders...</span>
+        </div>
+    </div>
+
+    <!-- Empty Orders State -->
+    <div class="text-center py-5 card-custom" ng-if="!loading && orders.length === 0">
+        <div class="my-4">
+            <i class="fa-solid fa-cookie-bite text-muted display-4 mb-3"></i>
+            <h4 class="fw-bold">No Bakery Orders Placed Yet</h4>
+            <p class="text-muted">Order a delicious cake, pastry box, or celebration candles today!</p>
+            <a href="#/products" class="btn btn-primary rounded-pill px-4 py-2 mt-2">Explore Bakery Menu</a>
+        </div>
+    </div>
+
+    <!-- Orders List -->
+    <div class="row g-4" ng-if="!loading && orders.length > 0">
+        <div class="col-12" ng-repeat="ord in orders">
+            <div class="card-custom p-4">
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 pb-3 border-bottom mb-3">
+                    <div>
+                        <span class="fw-bold text-dark fs-5 font-monospace">#{{ord.orderNumber}}</span>
+                        <span class="text-muted small ms-2"><i class="fa-regular fa-calendar me-1"></i>{{ord.createdAt | date:'medium'}}</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="status-badge" ng-class="{
+                            'badge-created': ord.orderStatus === 'CREATED',
+                            'badge-confirmed': ord.orderStatus === 'CONFIRMED',
+                            'badge-processing': ord.orderStatus === 'PROCESSING',
+                            'badge-shipped': ord.orderStatus === 'SHIPPED',
+                            'badge-delivered': ord.orderStatus === 'DELIVERED',
+                            'badge-cancelled': ord.orderStatus === 'CANCELLED'
+                        }">
+                            <i class="fa-solid fa-circle" style="font-size: 0.4rem;"></i> {{ord.orderStatus}}
+                        </span>
+                        <a href="#/orders/{{ord.id}}" class="btn btn-outline-primary btn-sm rounded-pill px-3">
+                            Track & Details <i class="fa-solid fa-chevron-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="row g-3 align-items-center">
+                    <div class="col-md-7">
+                        <div class="d-flex flex-wrap gap-2 align-items-center">
+                            <div class="d-flex align-items-center gap-2 me-3 mb-2" ng-repeat="item in ord.items | limitTo:3">
+                                <img ng-src="{{item.productImage || 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=50'}}" 
+                                     alt="{{item.productName}}" class="rounded-2 border" style="width: 44px; height: 44px; object-fit: cover;">
+                                <div class="small">
+                                    <div class="fw-semibold text-truncate" style="max-width: 160px;">{{item.productName}}</div>
+                                    <span class="text-muted">Qty: {{item.quantity}}</span>
+                                </div>
+                            </div>
+                            <span class="badge bg-light text-muted border" ng-if="ord.items.length > 3">
+                                +{{ord.items.length - 3}} more items
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-md-5 text-md-end border-top border-md-0 pt-2 pt-md-0">
+                        <div class="small text-muted mb-1">
+                            Payment: <strong>{{ord.paymentMethod}}</strong> | <span class="badge" ng-class="{'bg-success': ord.paymentStatus === 'PAID', 'bg-warning text-dark': ord.paymentStatus === 'PENDING'}">{{ord.paymentStatus}}</span>
+                        </div>
+                        <div class="fs-5 fw-bold text-dark font-monospace">
+                            &#8377;{{ord.finalAmount | number:2}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

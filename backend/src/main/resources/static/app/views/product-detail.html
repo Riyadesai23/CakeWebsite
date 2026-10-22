@@ -1,0 +1,152 @@
+<div class="container py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="#/home">Home</a></li>
+            <li class="breadcrumb-item"><a href="#/products">Bakery Menu</a></li>
+            <li class="breadcrumb-item"><a href="#/products?categoryId={{product.categoryId}}">{{product.categoryName}}</a></li>
+            <li class="breadcrumb-item active text-truncate" style="max-width: 300px;">{{product.name}}</li>
+        </ol>
+    </nav>
+
+    <!-- Loading Spinner -->
+    <div class="text-center py-5" ng-if="loading">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading bakery item...</span>
+        </div>
+    </div>
+
+    <!-- Product Details Card -->
+    <div class="card-custom p-4 mb-5" ng-if="!loading && product">
+        <div class="row g-4 align-items-center">
+            <!-- Product Image -->
+            <div class="col-lg-5 text-center">
+                <div class="position-relative p-3 bg-light rounded-4 overflow-hidden shadow-sm" style="min-height: 380px; display: flex; align-items: center; justify-content: center;">
+                    <span class="discount-badge fs-6 px-3 py-1" ng-if="product.discountPercentage > 0">
+                        {{product.discountPercentage}}% OFF
+                    </span>
+                    <img ng-src="{{product.imageUrl || 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=600&auto=format&fit=crop&q=80'}}" 
+                         alt="{{product.name}}" class="img-fluid rounded-3" style="max-height: 360px; width: 100%; object-fit: cover;">
+                </div>
+            </div>
+
+            <!-- Product Info -->
+            <div class="col-lg-7">
+                <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                    <span class="badge bg-primary bg-opacity-10 text-primary px-2.5 py-1.5 fw-bold">{{product.categoryName}}</span>
+                    <span class="badge bg-secondary bg-opacity-10 text-secondary" ng-if="product.brand">{{product.brand}}</span>
+                    <span class="badge-eggless"><i class="fa-solid fa-leaf"></i> 100% Eggless Option</span>
+                    <span class="badge bg-light text-muted border">SKU: {{product.sku}}</span>
+                </div>
+
+                <h1 class="h2 fw-bold mb-2">{{product.name}}</h1>
+
+                <!-- Pricing -->
+                <div class="d-flex align-items-baseline gap-3 my-3 p-3 bg-light rounded-3">
+                    <span class="fs-2 fw-bold text-dark font-monospace">&#8377;{{product.finalPrice | number:2}}</span>
+                    <span class="fs-5 text-muted text-decoration-line-through" ng-if="product.discountPercentage > 0">&#8377;{{product.price | number:2}}</span>
+                    <span class="badge bg-success" ng-if="product.discountPercentage > 0">You Save &#8377;{{(product.price - product.finalPrice) | number:2}}</span>
+                </div>
+
+                <!-- Stock Indicator -->
+                <div class="mb-3">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge" ng-class="{'bg-success': product.inStock && !product.lowStock, 'bg-warning text-dark': product.lowStock && product.inStock, 'bg-danger': !product.inStock}">
+                            <i class="fa-solid fa-circle-check me-1" ng-if="product.inStock && !product.lowStock"></i>
+                            <i class="fa-solid fa-triangle-exclamation me-1" ng-if="product.lowStock && product.inStock"></i>
+                            <i class="fa-solid fa-circle-xmark me-1" ng-if="!product.inStock"></i>
+                            <span ng-if="product.inStock && !product.lowStock">Freshly Available ({{product.availableQuantity}} {{product.unit}}s in stock)</span>
+                            <span ng-if="product.lowStock && product.inStock">Hurry! Only {{product.availableQuantity}} {{product.unit}}s remaining for today!</span>
+                            <span ng-if="!product.inStock">Sold Out for Today</span>
+                        </span>
+                    </div>
+                </div>
+
+                <p class="text-secondary mb-3" style="line-height: 1.7;">
+                    {{product.description}}
+                </p>
+
+                <!-- Bakery Custom Note / Message -->
+                <div class="mb-3 p-3 bg-white border rounded-3" ng-if="product.categoryName === 'Cakes' || product.categoryName === 'Custom Cakes'">
+                    <label class="small fw-bold text-primary mb-1 d-block">
+                        <i class="fa-solid fa-pen-fancy me-1"></i> Custom Message / Name on Cake (Optional):
+                    </label>
+                    <input type="text" class="form-control form-control-sm" placeholder="e.g., Happy Birthday Priya! (Max 30 characters)" maxlength="30">
+                    <small class="text-muted" style="font-size: 0.75rem;">Our patissiers will hand-pipe this greeting in gourmet chocolate on your cake.</small>
+                </div>
+
+                <!-- Quantity & Actions -->
+                <div class="row g-3 align-items-center pt-2 border-top" ng-if="product.inStock">
+                    <div class="col-auto">
+                        <label class="small text-muted d-block mb-1 fw-semibold">Quantity:</label>
+                        <div class="input-group" style="width: 130px;">
+                            <button class="btn btn-outline-secondary" type="button" ng-click="decrementQty()" ng-disabled="quantity <= 1">
+                                <i class="fa-solid fa-minus"></i>
+                            </button>
+                            <input type="text" class="form-control text-center fw-bold" ng-model="quantity" readonly>
+                            <button class="btn btn-outline-secondary" type="button" ng-click="incrementQty()" ng-disabled="quantity >= product.availableQuantity">
+                                <i class="fa-solid fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label class="small d-block mb-1">&nbsp;</label>
+                        <button class="btn btn-primary btn-lg px-4 fw-bold" ng-click="addToCart()">
+                            <i class="fa-solid fa-cart-plus me-2"></i>Add to Bakery Cart
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Product Specifications -->
+                <div class="mt-4 pt-3">
+                    <h6 class="fw-bold mb-2">Bakery Details & Storage</h6>
+                    <table class="table table-sm table-bordered mb-0" style="font-size: 0.875rem;">
+                        <tbody>
+                            <tr>
+                                <th class="bg-light text-muted" style="width: 35%;">Category & Collection</th>
+                                <td>{{product.categoryName}}</td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light text-muted">Bakery Studio</th>
+                                <td>{{product.brand || 'Bake My Day Artisanal'}}</td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light text-muted">Packaging / Unit</th>
+                                <td>{{product.unit}}</td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light text-muted">Storage & Shelf Life</th>
+                                <td>Store chilled at 4°C - 8°C. Best enjoyed within 48 hours of delivery.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Related Products -->
+    <div class="mt-5" ng-if="relatedProducts.length > 0">
+        <h3 class="h4 fw-bold mb-4">Pair With Other Sweet Treats</h3>
+        <div class="row g-4">
+            <div class="col-6 col-md-3" ng-repeat="rel in relatedProducts">
+                <div class="product-card">
+                    <div class="product-image-wrap" style="height: 180px;">
+                        <a href="#/products/{{rel.id}}">
+                            <img ng-src="{{rel.imageUrl || 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=500&auto=format&fit=crop&q=60'}}" alt="{{rel.name}}">
+                        </a>
+                    </div>
+                    <div class="product-body p-3">
+                        <div class="product-category small">{{rel.categoryName}}</div>
+                        <a href="#/products/{{rel.id}}" class="text-decoration-none">
+                            <h5 class="product-title fs-6" title="{{rel.name}}">{{rel.name}}</h5>
+                        </a>
+                        <div class="price-box">
+                            <span class="current-price fs-6">&#8377;{{rel.finalPrice | number:2}}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

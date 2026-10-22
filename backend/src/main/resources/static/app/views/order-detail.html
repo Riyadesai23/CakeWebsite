@@ -1,0 +1,166 @@
+<div class="container py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="#/home">Home</a></li>
+            <li class="breadcrumb-item"><a href="#/orders">My Orders</a></li>
+            <li class="breadcrumb-item active font-monospace" aria-current="page">#{{order.orderNumber}}</li>
+        </ol>
+    </nav>
+
+    <!-- Loading Spinner -->
+    <div class="text-center py-5" ng-if="loading">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading order details...</span>
+        </div>
+    </div>
+
+    <div ng-if="!loading && order">
+        <!-- Order Header Card -->
+        <div class="card-custom p-4 mb-4">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+                <div>
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <h1 class="h3 fw-bold mb-0 font-monospace">Bakery Order #{{order.orderNumber}}</h1>
+                        <span class="status-badge" ng-class="{
+                            'badge-created': order.orderStatus === 'CREATED',
+                            'badge-confirmed': order.orderStatus === 'CONFIRMED',
+                            'badge-processing': order.orderStatus === 'PROCESSING',
+                            'badge-shipped': order.orderStatus === 'SHIPPED',
+                            'badge-delivered': order.orderStatus === 'DELIVERED',
+                            'badge-cancelled': order.orderStatus === 'CANCELLED'
+                        }">
+                            {{order.orderStatus}}
+                        </span>
+                    </div>
+                    <div class="text-muted small">
+                        Placed on {{order.createdAt | date:'medium'}}
+                    </div>
+                </div>
+
+                <div class="text-end">
+                    <a href="#/orders" class="btn btn-outline-secondary btn-sm">
+                        <i class="fa-solid fa-arrow-left me-1"></i> Back to Orders
+                    </a>
+                </div>
+            </div>
+
+            <!-- Order Pipeline Stepper (Hidden if Cancelled) -->
+            <div class="order-stepper" ng-if="order.orderStatus !== 'CANCELLED'">
+                <div class="stepper-step" ng-repeat="step in steps" 
+                     ng-class="{'completed': isStepCompleted(step.key), 'active': isStepActive(step.key)}">
+                    <div class="step-icon">
+                        <i class="fa-solid" ng-class="step.icon"></i>
+                    </div>
+                    <div class="step-label">{{step.label}}</div>
+                </div>
+            </div>
+
+            <!-- Cancelled Notice -->
+            <div class="alert alert-danger d-flex align-items-center gap-2 mt-4 mb-0" ng-if="order.orderStatus === 'CANCELLED'">
+                <i class="fa-solid fa-triangle-exclamation fs-5"></i>
+                <div>
+                    <strong>Order Cancelled:</strong> This order has been cancelled and any reserved inventory has been returned to stock.
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- Order Line Items -->
+            <div class="col-lg-8">
+                <div class="card-custom p-0 overflow-hidden mb-4">
+                    <div class="p-3 bg-light border-bottom fw-bold">
+                        <i class="fa-solid fa-cake-candles me-2 text-primary"></i>Bakery Items in Order ({{order.items.length}})
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table align-middle mb-0">
+                            <thead class="bg-light small text-muted">
+                                <tr>
+                                    <th class="ps-4">Item Details</th>
+                                    <th class="text-center">Unit Price</th>
+                                    <th class="text-center">Quantity</th>
+                                    <th class="text-end pe-4">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="item in order.items">
+                                    <td class="ps-4 py-3">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <img ng-src="{{item.productImage || 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=80'}}" 
+                                                 alt="{{item.productName}}" class="rounded-2 border" style="width: 55px; height: 55px; object-fit: cover;">
+                                            <div>
+                                                <div class="fw-bold text-dark">{{item.productName}}</div>
+                                                <small class="text-muted">SKU: {{item.productSku}}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="text-center">&#8377;{{item.unitPrice | number:2}}</td>
+                                    <td class="text-center fw-bold">{{item.quantity}}</td>
+                                    <td class="text-end pe-4 fw-bold font-monospace text-dark">&#8377;{{item.totalPrice | number:2}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shipping & Billing Summary -->
+            <div class="col-lg-4">
+                <!-- Shipping Address Card -->
+                <div class="card-custom p-4 mb-4">
+                    <h6 class="fw-bold mb-3 d-flex align-items-center gap-2">
+                        <i class="fa-solid fa-truck-ramp-box text-primary"></i> Celebration Delivery Details
+                    </h6>
+                    <div class="small mb-2">
+                        <div class="fw-bold text-dark">{{order.recipientName}}</div>
+                        <div class="text-muted"><i class="fa-solid fa-phone me-1"></i>{{order.contactPhone}}</div>
+                    </div>
+                    <div class="small text-secondary bg-light p-2.5 rounded-2 border">
+                        <i class="fa-solid fa-location-dot text-danger me-1"></i>{{order.shippingAddress}}
+                    </div>
+                    <div class="small mt-2" ng-if="order.notes">
+                        <span class="text-muted">Celebration Notes:</span> <em>{{order.notes}}</em>
+                    </div>
+                </div>
+
+                <!-- Payment & Totals Card -->
+                <div class="card-custom p-4">
+                    <h6 class="fw-bold mb-3 d-flex align-items-center gap-2">
+                        <i class="fa-solid fa-receipt text-primary"></i> Payment & Bakery Bill
+                    </h6>
+
+                    <div class="d-flex justify-content-between mb-2 small text-muted">
+                        <span>Payment Method:</span>
+                        <strong class="text-dark">{{order.paymentMethod}}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2 small text-muted">
+                        <span>Payment Status:</span>
+                        <span class="badge" ng-class="{'bg-success': order.paymentStatus === 'PAID', 'bg-warning text-dark': order.paymentStatus === 'PENDING'}">
+                            {{order.paymentStatus}}
+                        </span>
+                    </div>
+
+                    <hr class="my-2">
+
+                    <div class="d-flex justify-content-between mb-2 small text-muted">
+                        <span>Items Subtotal:</span>
+                        <span>&#8377;{{order.totalAmount | number:2}}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2 small text-success" ng-if="order.discountAmount > 0">
+                        <span>Bakery Offers:</span>
+                        <span>- &#8377;{{order.discountAmount | number:2}}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3 small text-muted">
+                        <span>Chilled Delivery:</span>
+                        <span class="text-success fw-bold">FREE</span>
+                    </div>
+
+                    <div class="d-flex justify-content-between py-2 border-top border-bottom">
+                        <span class="fw-bold">Total Paid / Due:</span>
+                        <span class="fs-5 fw-bold text-primary font-monospace">&#8377;{{order.finalAmount | number:2}}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

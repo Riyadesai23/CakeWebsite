@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="ecommerceApp">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bake My Day - Artisanal Cakes, Pastries & Custom Celebrations</title>
+    <meta name="description" content="Freshly baked artisanal cakes, gourmet pastries, designer custom celebration cakes, and party accessories delivered fresh daily.">
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- FontAwesome 6 Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Custom Design Tokens & Styling -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Global Toast Container -->
+    <div class="toast-container">
+        <div class="custom-toast" ng-repeat="t in toasts track by t.id" 
+             ng-class="{'toast-success': t.type === 'success', 'toast-danger': t.type === 'danger', 'toast-warning': t.type === 'warning', 'toast-info': t.type === 'info'}">
+            <i class="fa-solid fs-5" ng-class="t.icon"></i>
+            <div class="flex-grow-1">
+                <div class="fw-bold small">{{t.title}}</div>
+                <div class="small text-muted">{{t.message}}</div>
+            </div>
+            <button type="button" class="btn-close btn-close-sm" ng-click="$root.toasts.splice($index, 1)"></button>
+        </div>
+    </div>
+
+    <!-- Main Navigation Bar -->
+    <header class="main-navbar" ng-controller="NavbarController">
+        <div class="container d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <!-- Brand Logo -->
+            <a href="#/home" class="navbar-brand text-decoration-none">
+                <i class="fa-solid fa-cake-candles text-primary"></i>
+                <span>Bake My Day</span>
+            </a>
+
+            <!-- Search Bar -->
+            <div class="search-input-group d-none d-md-block flex-grow-1 mx-lg-4">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                <input type="text" class="form-control" placeholder="Search cakes, chocolate pastries, custom wedding cakes, candles..." 
+                       ng-model="searchQuery" ng-keyup="$event.keyCode == 13 && submitSearch()">
+            </div>
+
+            <!-- Nav Actions -->
+            <div class="d-flex align-items-center gap-2">
+                <a href="#/products" class="nav-link">
+                    <i class="fa-solid fa-cookie-bite me-1"></i> Bakery Menu
+                </a>
+
+                <!-- Cart Button -->
+                <a href="#/cart" class="btn btn-light rounded-pill px-3 py-2 border cart-btn-badge" ng-if="isLoggedIn">
+                    <i class="fa-solid fa-bag-shopping text-primary fs-5"></i>
+                    <span class="ms-1 fw-bold d-none d-sm-inline">Cart</span>
+                    <span class="cart-count" ng-if="cartCount > 0">{{cartCount}}</span>
+                </a>
+
+                <!-- Admin Link if Admin -->
+                <a href="#/admin/dashboard" class="btn btn-dark btn-sm rounded-pill px-3" ng-if="isAdmin">
+                    <i class="fa-solid fa-shield-halved text-warning me-1"></i> Bakery Admin
+                </a>
+
+                <!-- Auth / Profile Dropdown -->
+                <div class="dropdown" ng-if="isLoggedIn">
+                    <button class="btn btn-outline-primary btn-sm dropdown-toggle rounded-pill px-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fa-regular fa-user me-1"></i> {{currentUser.firstName || currentUser.username}}
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                        <li><a class="dropdown-item small" href="#/profile"><i class="fa-regular fa-id-badge me-2 text-muted"></i>My Profile</a></li>
+                        <li><a class="dropdown-item small" href="#/orders"><i class="fa-solid fa-clock-rotate-left me-2 text-muted"></i>My Orders</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item small text-danger" href="javascript:void(0)" ng-click="logout()"><i class="fa-solid fa-arrow-right-from-bracket me-2"></i>Sign Out</a></li>
+                    </ul>
+                </div>
+
+                <!-- Guest Login Buttons -->
+                <div class="d-flex align-items-center gap-2" ng-if="!isLoggedIn">
+                    <a href="#/login" class="btn btn-outline-primary btn-sm rounded-pill px-3">Sign In</a>
+                    <a href="#/register" class="btn btn-primary btn-sm rounded-pill px-3 text-white">Register</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Search Bar -->
+        <div class="container d-block d-md-none mt-2">
+            <div class="search-input-group">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                <input type="text" class="form-control" placeholder="Search cakes, pastries, candles..." 
+                       ng-model="searchQuery" ng-keyup="$event.keyCode == 13 && submitSearch()">
+            </div>
+        </div>
+    </header>
+
+    <!-- Main View Viewport -->
+    <main class="flex-grow-1" ng-view></main>
+
+    <!-- Main Footer -->
+    <footer class="main-footer">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <div class="footer-brand">
+                        <i class="fa-solid fa-cake-candles text-primary me-2"></i>Bake My Day
+                    </div>
+                    <p class="small text-muted mb-3" style="max-width: 320px;">
+                        Handcrafting freshly baked moments of joy with 100% natural ingredients, eggless options, and custom designer creations.
+                    </p>
+                    <div class="d-flex gap-3 text-muted">
+                        <a href="javascript:void(0)" class="text-secondary"><i class="fa-brands fa-instagram fs-5"></i></a>
+                        <a href="javascript:void(0)" class="text-secondary"><i class="fa-brands fa-facebook fs-5"></i></a>
+                        <a href="javascript:void(0)" class="text-secondary"><i class="fa-brands fa-pinterest fs-5"></i></a>
+                    </div>
+                </div>
+
+                <div class="col-6 col-md-3 col-lg-2">
+                    <h6 class="text-white fw-bold mb-3 small text-uppercase">Bakery Menu</h6>
+                    <ul class="footer-links">
+                        <li><a href="#/products?categoryId=1">Cakes</a></li>
+                        <li><a href="#/products?categoryId=2">Pastries</a></li>
+                        <li><a href="#/products?categoryId=3">Custom Cakes</a></li>
+                        <li><a href="#/products?categoryId=4">Candles & Décor</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-6 col-md-3 col-lg-2">
+                    <h6 class="text-white fw-bold mb-3 small text-uppercase">Customer Care</h6>
+                    <ul class="footer-links">
+                        <li><a href="#/profile">My Profile</a></li>
+                        <li><a href="#/orders">Track Orders</a></li>
+                        <li><a href="#/cart">Shopping Cart</a></li>
+                        <li><a href="#/login">Customer Login</a></li>
+                        <li><a href="#/admin/login">Admin Portal</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-md-6 col-lg-4">
+                    <h6 class="text-white fw-bold mb-3 small text-uppercase">Fresh Baking Guarantee</h6>
+                    <p class="small text-muted mb-2">
+                        Every cake is baked freshly on order by our master patissiers. Delivered in temperature-controlled chilled packaging.
+                    </p>
+                    <div class="badge bg-dark border text-light p-2 mt-2">
+                        <i class="fa-solid fa-award me-1 text-warning"></i> 100% Fresh & Artisanal Quality Assured
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom d-flex flex-wrap justify-content-between align-items-center gap-2">
+                <div>&copy; 2026 Bake My Day Patisserie & Cake Studio. All rights reserved.</div>
+                <div class="text-muted small">Baking smiles every day with love and passion.</div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- AngularJS 1.8.2 Core & Route -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-route.min.js"></script>
+
+    <!-- AngularJS Application Scripts -->
+    <script src="app/app.js"></script>
+    <script src="app/routes.js"></script>
+
+    <!-- Directives -->
+    <script>
+        // Custom directive to parse numeric values in select dropdowns
+        app.directive('convertToNumber', function() {
+            return {
+                require: 'ngModel',
+                link: function(scope, element, attrs, ngModel) {
+                    ngModel.$parsers.push(function(val) {
+                        return val !== null && val !== undefined && val !== '' ? parseInt(val, 10) : null;
+                    });
+                    ngModel.$formatters.push(function(val) {
+                        return val !== null && val !== undefined ? '' + val : '';
+                    });
+                }
+            };
+        });
+    </script>
+
+    <!-- Services -->
+    <script src="app/services/toast.service.js"></script>
+    <script src="app/services/auth.service.js"></script>
+    <script src="app/services/category.service.js"></script>
+    <script src="app/services/product.service.js"></script>
+    <script src="app/services/inventory.service.js"></script>
+    <script src="app/services/cart.service.js"></script>
+    <script src="app/services/order.service.js"></script>
+    <script src="app/services/admin.service.js"></script>
+
+    <!-- Controllers -->
+    <script src="app/controllers/navbar.controller.js"></script>
+    <script src="app/controllers/home.controller.js"></script>
+    <script src="app/controllers/product-list.controller.js"></script>
+    <script src="app/controllers/product-detail.controller.js"></script>
+    <script src="app/controllers/cart.controller.js"></script>
+    <script src="app/controllers/checkout.controller.js"></script>
+    <script src="app/controllers/order-history.controller.js"></script>
+    <script src="app/controllers/order-detail.controller.js"></script>
+    <script src="app/controllers/profile.controller.js"></script>
+    <script src="app/controllers/auth.controller.js"></script>
+    <script src="app/controllers/admin-dashboard.controller.js"></script>
+    <script src="app/controllers/admin-categories.controller.js"></script>
+    <script src="app/controllers/admin-products.controller.js"></script>
+    <script src="app/controllers/admin-inventory.controller.js"></script>
+    <script src="app/controllers/admin-orders.controller.js"></script>
+    <script src="app/controllers/admin-users.controller.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,205 @@
+<div class="admin-wrapper">
+    <!-- Admin Sidebar -->
+    <div class="admin-sidebar">
+        <div class="d-flex align-items-center gap-2 mb-4 px-2">
+            <i class="fa-solid fa-shield-halved text-warning fs-4"></i>
+            <div>
+                <div class="fw-bold fs-6">Admin Portal</div>
+                <small class="text-muted">Bake My Day v1.0</small>
+            </div>
+        </div>
+
+        <ul class="admin-nav">
+            <li class="admin-nav-item">
+                <a href="#/admin/dashboard" class="admin-nav-link active">
+                    <i class="fa-solid fa-chart-pie"></i> Dashboard
+                </a>
+            </li>
+            <li class="admin-nav-item">
+                <a href="#/admin/categories" class="admin-nav-link">
+                    <i class="fa-solid fa-layer-group"></i> Categories
+                </a>
+            </li>
+            <li class="admin-nav-item">
+                <a href="#/admin/products" class="admin-nav-link">
+                    <i class="fa-solid fa-box"></i> Products
+                </a>
+            </li>
+            <li class="admin-nav-item">
+                <a href="#/admin/inventory" class="admin-nav-link">
+                    <i class="fa-solid fa-warehouse"></i> Inventory Stock
+                </a>
+            </li>
+            <li class="admin-nav-item">
+                <a href="#/admin/orders" class="admin-nav-link">
+                    <i class="fa-solid fa-truck-ramp-box"></i> Orders
+                </a>
+            </li>
+            <li class="admin-nav-item">
+                <a href="#/admin/users" class="admin-nav-link">
+                    <i class="fa-solid fa-users"></i> Users
+                </a>
+            </li>
+            <li class="admin-nav-item mt-4 pt-3 border-top border-secondary">
+                <a href="#/home" class="admin-nav-link">
+                    <i class="fa-solid fa-store"></i> Customer Storefront
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Admin Content Area -->
+    <div class="admin-content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h3 fw-bold mb-1">Store Overview & Analytics</h1>
+                <p class="text-muted small mb-0">Real-time statistics on revenue, orders, and stock</p>
+            </div>
+            <div class="d-flex gap-2">
+                <a href="#/admin/products" class="btn btn-primary btn-sm">
+                    <i class="fa-solid fa-plus me-1"></i> Add Product
+                </a>
+                <a href="#/admin/inventory" class="btn btn-outline-danger btn-sm" ng-if="stats.lowStockProducts > 0">
+                    <i class="fa-solid fa-triangle-exclamation me-1"></i> {{stats.lowStockProducts}} Low Stock Items
+                </a>
+            </div>
+        </div>
+
+        <!-- KPI Metric Cards -->
+        <div class="row g-4 mb-4">
+            <!-- Total Revenue -->
+            <div class="col-sm-6 col-xl-3">
+                <div class="kpi-card kpi-sales">
+                    <div>
+                        <div class="kpi-title">Total Sales Revenue</div>
+                        <div class="kpi-value font-monospace">&#8377;{{stats.totalSales | number:2}}</div>
+                    </div>
+                    <div class="kpi-icon">
+                        <i class="fa-solid fa-indian-rupee-sign"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Orders -->
+            <div class="col-sm-6 col-xl-3">
+                <div class="kpi-card kpi-orders">
+                    <div>
+                        <div class="kpi-title">Total Orders</div>
+                        <div class="kpi-value font-monospace">{{stats.totalOrders}}</div>
+                        <small class="text-muted">{{stats.pendingOrders}} pending</small>
+                    </div>
+                    <div class="kpi-icon">
+                        <i class="fa-solid fa-bag-shopping"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Products -->
+            <div class="col-sm-6 col-xl-3">
+                <div class="kpi-card kpi-users">
+                    <div>
+                        <div class="kpi-title">Active Products</div>
+                        <div class="kpi-value font-monospace">{{stats.activeProducts}}</div>
+                        <small class="text-muted">out of {{stats.totalProducts}} total</small>
+                    </div>
+                    <div class="kpi-icon">
+                        <i class="fa-solid fa-box-open"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Low Stock Alerts -->
+            <div class="col-sm-6 col-xl-3">
+                <div class="kpi-card kpi-stock">
+                    <div>
+                        <div class="kpi-title">Low Stock Alerts</div>
+                        <div class="kpi-value text-danger font-monospace">{{stats.lowStockProducts}}</div>
+                        <small class="text-danger fw-semibold">Needs restock</small>
+                    </div>
+                    <div class="kpi-icon">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- Recent Orders Table -->
+            <div class="col-lg-8">
+                <div class="card-custom p-0 overflow-hidden">
+                    <div class="p-3 bg-white border-bottom d-flex justify-content-between align-items-center">
+                        <h6 class="fw-bold mb-0"><i class="fa-solid fa-clock-rotate-left me-2 text-primary"></i>Recent Customer Orders</h6>
+                        <a href="#/admin/orders" class="btn btn-link btn-sm text-decoration-none p-0">View All</a>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light small text-muted">
+                                <tr>
+                                    <th class="ps-3">Order Number</th>
+                                    <th>Customer</th>
+                                    <th>Total</th>
+                                    <th>Status</th>
+                                    <th class="text-end pe-3">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="ord in stats.recentOrders">
+                                    <td class="ps-3 py-3 font-monospace fw-bold">#{{ord.orderNumber}}</td>
+                                    <td>
+                                        <div class="fw-semibold">{{ord.recipientName}}</div>
+                                        <small class="text-muted">{{ord.contactPhone}}</small>
+                                    </td>
+                                    <td class="fw-bold font-monospace">&#8377;{{ord.finalAmount | number:2}}</td>
+                                    <td>
+                                        <span class="status-badge" ng-class="{
+                                            'badge-created': ord.orderStatus === 'CREATED',
+                                            'badge-confirmed': ord.orderStatus === 'CONFIRMED',
+                                            'badge-processing': ord.orderStatus === 'PROCESSING',
+                                            'badge-shipped': ord.orderStatus === 'SHIPPED',
+                                            'badge-delivered': ord.orderStatus === 'DELIVERED',
+                                            'badge-cancelled': ord.orderStatus === 'CANCELLED'
+                                        }">
+                                            {{ord.orderStatus}}
+                                        </span>
+                                    </td>
+                                    <td class="text-end pe-3">
+                                        <a href="#/admin/orders/{{ord.id}}" class="btn btn-outline-primary btn-sm rounded-pill px-2.5">
+                                            Manage
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Low Stock Warning List -->
+            <div class="col-lg-4">
+                <div class="card-custom p-0 overflow-hidden">
+                    <div class="p-3 bg-white border-bottom d-flex justify-content-between align-items-center">
+                        <h6 class="fw-bold mb-0 text-danger"><i class="fa-solid fa-triangle-exclamation me-2"></i>Low Stock Items</h6>
+                        <a href="#/admin/inventory" class="btn btn-link btn-sm text-decoration-none p-0 text-danger">Restock</a>
+                    </div>
+                    <div class="p-3">
+                        <div class="d-flex align-items-center justify-content-between p-2 mb-2 bg-light rounded-2 border" ng-repeat="item in lowStockItems | limitTo:5">
+                            <div class="text-truncate me-2">
+                                <div class="fw-bold small text-truncate">{{item.productName}}</div>
+                                <small class="text-muted">SKU: {{item.productSku}}</small>
+                            </div>
+                            <div class="text-end">
+                                <span class="badge bg-danger">{{item.availableQuantity}} left</span>
+                                <small class="d-block text-muted" style="font-size: 0.7rem;">Min: {{item.minimumStockLevel}}</small>
+                            </div>
+                        </div>
+
+                        <div class="text-center text-muted small py-3" ng-if="lowStockItems.length === 0">
+                            <i class="fa-solid fa-circle-check text-success fs-4 d-block mb-1"></i>
+                            All inventory levels are healthy!
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

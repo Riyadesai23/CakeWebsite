@@ -1,0 +1,163 @@
+<div class="container py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="#/home">Home</a></li>
+            <li class="breadcrumb-item"><a href="#/cart">Bakery Cart</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Checkout</li>
+        </ol>
+    </nav>
+
+    <h1 class="h3 fw-bold mb-4">Complete Your Bakery Order</h1>
+
+    <div class="row g-4">
+        <!-- Checkout Form -->
+        <div class="col-lg-8">
+            <form ng-submit="placeOrder()">
+                <!-- Shipping Address Section -->
+                <div class="card-custom p-4 mb-4">
+                    <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
+                        <i class="fa-solid fa-location-dot text-primary"></i> 1. Celebration Delivery Address
+                    </h5>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold text-muted">Recipient Full Name *</label>
+                            <input type="text" class="form-control" placeholder="e.g. Priya Sharma" ng-model="form.recipientName" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold text-muted">Contact Phone Number *</label>
+                            <input type="text" class="form-control" placeholder="e.g. +91 9876543210" ng-model="form.contactPhone" required>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label small fw-semibold text-muted">Address Line 1 (Street/Flat/Building) *</label>
+                            <input type="text" class="form-control" placeholder="House/Flat No, Apartment/Street Name" ng-model="form.addressLine1" required>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label small fw-semibold text-muted">Address Line 2 (Area/Landmark)</label>
+                            <input type="text" class="form-control" placeholder="Nearby landmark or sector" ng-model="form.addressLine2">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-semibold text-muted">City *</label>
+                            <input type="text" class="form-control" placeholder="e.g. Bengaluru" ng-model="form.city" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-semibold text-muted">State *</label>
+                            <input type="text" class="form-control" placeholder="e.g. Karnataka" ng-model="form.state" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-semibold text-muted">PIN / Postal Code *</label>
+                            <input type="text" class="form-control" placeholder="e.g. 560034" ng-model="form.postalCode" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Method Section -->
+                <div class="card-custom p-4 mb-4">
+                    <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
+                        <i class="fa-solid fa-credit-card text-primary"></i> 2. Payment Method
+                    </h5>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="card-custom p-3 d-flex align-items-center gap-3 cursor-pointer w-100" 
+                                   ng-class="{'border-primary bg-light': form.paymentMethod === 'COD'}" style="cursor: pointer;">
+                                <input class="form-check-input mt-0" type="radio" name="paymentMethod" value="COD" ng-model="form.paymentMethod">
+                                <div>
+                                    <div class="fw-bold"><i class="fa-solid fa-money-bill-wave text-success me-1"></i> Cash on Delivery</div>
+                                    <small class="text-muted">Pay upon fresh chilled delivery</small>
+                                </div>
+                            </label>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="card-custom p-3 d-flex align-items-center gap-3 cursor-pointer w-100" 
+                                   ng-class="{'border-primary bg-light': form.paymentMethod === 'CREDIT_CARD'}" style="cursor: pointer;">
+                                <input class="form-check-input mt-0" type="radio" name="paymentMethod" value="CREDIT_CARD" ng-model="form.paymentMethod">
+                                <div>
+                                    <div class="fw-bold"><i class="fa-solid fa-credit-card text-primary me-1"></i> Credit / Debit Card</div>
+                                    <small class="text-muted">Visa, MasterCard, RuPay cards</small>
+                                </div>
+                            </label>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="card-custom p-3 d-flex align-items-center gap-3 cursor-pointer w-100" 
+                                   ng-class="{'border-primary bg-light': form.paymentMethod === 'UPI'}" style="cursor: pointer;">
+                                <input class="form-check-input mt-0" type="radio" name="paymentMethod" value="UPI" ng-model="form.paymentMethod">
+                                <div>
+                                    <div class="fw-bold"><i class="fa-solid fa-mobile-screen-button text-info me-1"></i> UPI / QR Instant Pay</div>
+                                    <small class="text-muted">Google Pay, PhonePe, Paytm</small>
+                                </div>
+                            </label>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="card-custom p-3 d-flex align-items-center gap-3 cursor-pointer w-100" 
+                                   ng-class="{'border-primary bg-light': form.paymentMethod === 'NET_BANKING'}" style="cursor: pointer;">
+                                <input class="form-check-input mt-0" type="radio" name="paymentMethod" value="NET_BANKING" ng-model="form.paymentMethod">
+                                <div>
+                                    <div class="fw-bold"><i class="fa-solid fa-building-columns text-secondary me-1"></i> Net Banking</div>
+                                    <small class="text-muted">All major Indian banks supported</small>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notes Section -->
+                <div class="card-custom p-4 mb-4">
+                    <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
+                        <i class="fa-solid fa-note-sticky text-primary"></i> 3. Delivery & Celebration Notes (Optional)
+                    </h5>
+                    <textarea class="form-control" rows="2" placeholder="e.g., Surprise birthday cake delivery, deliver between 4 PM - 6 PM, please don't ring bell..." ng-model="form.notes"></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-lg w-100 py-3 fw-bold shadow" ng-disabled="submitting">
+                    <span ng-if="!submitting"><i class="fa-solid fa-lock me-2"></i>Place Bakery Order (&#8377;{{cart.finalAmount | number:2}})</span>
+                    <span ng-if="submitting"><i class="fa-solid fa-spinner fa-spin me-2"></i>Baking & preparing your order...</span>
+                </button>
+            </form>
+        </div>
+
+        <!-- Order Summary Side Panel -->
+        <div class="col-lg-4">
+            <div class="card-custom p-4 sticky-top" style="top: 85px;">
+                <h5 class="fw-bold mb-3 pb-2 border-bottom">Items in Order ({{cart.totalItems}})</h5>
+
+                <div class="cart-items-preview mb-3" style="max-height: 280px; overflow-y: auto;">
+                    <div class="d-flex align-items-center gap-3 mb-3" ng-repeat="item in cart.items">
+                        <img ng-src="{{item.productImage || 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=60'}}" 
+                             alt="{{item.productName}}" class="rounded-2 border" style="width: 48px; height: 48px; object-fit: cover;">
+                        <div class="flex-grow-1 text-truncate">
+                            <div class="fw-semibold text-truncate small">{{item.productName}}</div>
+                            <small class="text-muted">Qty: {{item.quantity}} &times; &#8377;{{item.unitPrice | number:2}}</small>
+                        </div>
+                        <div class="fw-bold small font-monospace">
+                            &#8377;{{item.totalPrice | number:2}}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border-top pt-3">
+                    <div class="d-flex justify-content-between mb-2 small text-muted">
+                        <span>Items Subtotal:</span>
+                        <span>&#8377;{{cart.subtotal | number:2}}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2 text-success small" ng-if="cart.discountAmount > 0">
+                        <span>Bakery Discounts:</span>
+                        <span>- &#8377;{{cart.discountAmount | number:2}}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3 small text-muted">
+                        <span>Chilled Safe Delivery:</span>
+                        <span class="text-success fw-bold">FREE</span>
+                    </div>
+                    <div class="d-flex justify-content-between py-2 border-top border-bottom">
+                        <span class="fw-bold">Payable Amount:</span>
+                        <span class="fs-5 fw-bold text-primary font-monospace">&#8377;{{cart.finalAmount | number:2}}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
